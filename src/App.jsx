@@ -2,17 +2,84 @@ import { useState } from "react";
 import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0);
-
+  const [list, setList] = useState([]);
+  const [todo, setTodo] = useState("");
+  const [editingTask, setEditingTask] = useState(null);
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (editingTask === null) {
+      // Si editingTask est null, cela signifie qu'on ajoute une nouvelle tâche
+      const newTask = {
+        id: new Date().getTime(),
+        text: todo,
+        completed: false,
+      };
+      setList([...list, newTask]);
+    } else {
+      // Sinon, on modifie la tâche existante
+      const updatedList = list.map((task) =>
+        task.id === editingTask ? { ...task, text: todo } : task
+      );
+      setList(updatedList);
+      setEditingTask(null); // On réinitialise editingTask après modification
+    }
+    setTodo("");
+  }
+  function deleteTasks(id) {
+    const updateTask = [...list].filter((todo) => todo.id !== id);
+    setList(updateTask);
+  }
+  function taskCompleted(id) {
+    const updateTask = list.map((todo) => {
+      if (todo.id === id) {
+        return {
+          ...todo,
+          completed: !todo.completed,
+        };
+      }
+      return todo;
+    });
+    setList(updateTask);
+  }
+  function handleEditClick(id, text) {
+    setEditingTask(id);
+    setTodo(text);
+  }
   return (
     <>
       <div className="app">
-        <div className="container">
+        <form className="container" onSubmit={handleSubmit}>
           <div className="wrapper">
-            <input type="text" placeholder="Task to do" />
-            <button className="btn-todo">Add</button>
+            <input
+              type="text"
+              onChange={(e) => setTodo(e.target.value)}
+              value={todo}
+              placeholder="Task to do"
+            />
+            <button className="btn-todo" type="submit">
+              Add
+            </button>
           </div>
-        </div>
+        </form>
+        {list.map((task) => (
+          <div className="task" key={task.id}>
+            <p
+              className={task.completed ? "task-text strike" : "task-text"}
+              onClick={() => taskCompleted(task.id)}
+            >
+              {task.text}
+            </p>
+            <button
+              className="edit"
+              onClick={() => handleEditClick(task.id, task.text)}
+            >
+              edit
+            </button>
+            <button className="delete" onClick={() => deleteTasks(task.id)}>
+              delete
+            </button>
+          </div>
+        ))}
       </div>
     </>
   );

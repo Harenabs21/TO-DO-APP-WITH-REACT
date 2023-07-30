@@ -57,7 +57,7 @@ function App() {
               placeholder="Task to do"
             />
             <button className="btn-todo" type="submit">
-              Add
+              {editingTask === null ? "Add" : "Edit"}
             </button>
           </div>
         </form>

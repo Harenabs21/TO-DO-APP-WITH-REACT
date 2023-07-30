@@ -5,8 +5,14 @@ function App() {
   const [list, setList] = useState([]);
   const [todo, setTodo] = useState("");
   const [editingTask, setEditingTask] = useState(null);
+  const [error, setError] = useState(false);
   function handleSubmit(e) {
     e.preventDefault();
+    if (!todo.trim()) {
+      setError(true); 
+      alert("input cannot be empty");
+      return;
+    }
     if (editingTask === null) {
       // Si editingTask est null, cela signifie qu'on ajoute une nouvelle tâche
       const newTask = {
@@ -23,6 +29,7 @@ function App() {
       setList(updatedList);
       setEditingTask(null); // On réinitialise editingTask après modification
     }
+    setError(false); 
     setTodo("");
   }
   function deleteTasks(id) {
